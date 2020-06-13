@@ -3,7 +3,7 @@ import time
 
 class Sudoku:
 
-    #Returns a List of tuples while contain the position of emptyspaces in a (3 * 3) block
+    #Returns a List of tuples which contain the position of emptyspaces in a (3 * 3) block
     def findEmptyspaces(self,grid,block):
 
         emptyspaces = list()
