@@ -3,6 +3,7 @@ import pygame
 
 class Sudoku:
 
+
     def isValid(self,grid):
         self.validrow=False
         self.validcolumn=False
@@ -37,7 +38,6 @@ class Sudoku:
         return True
 
 
-
     def findEmptyspaces(self,grid,block):
         emptyspaces=list()
         emptyspaces.clear()
@@ -45,7 +45,6 @@ class Sudoku:
             for j in range((block%3)*3,((((block)%3)*3)+3)):
                 if(grid[i][j]==0):
                     emptyspaces.append((i,j))
-        
         return emptyspaces
 
     def InsertInemptySpace(self,grid,emptyspace):
@@ -88,28 +87,68 @@ class Sudoku:
         return grid
 
                             
-    def FindAllEmptyspace(self,grid):
-        emptyy=list()
+    def Findempty(self,grid):
+        self.grid=grid
         for i in range(0,9):
             for j in range(0,9):
                 if(grid[i][j]==0):
-                    emptyy.append((i,j))
-        return emptyy
+                    return(i,j)
+        return False
+    
+    def valid(self,grid,val,pos):
+        for i in range(0,9):
+            if(self.grid[pos[0]][i]==val and pos[1]!=i):
+                return False
+        for i in range(0,9):
+            if(self.grid[i][pos[1]] == val and pos[0]!=i):
+                return False
+        
+        box_x = pos[1]//3
+        box_y = pos[0]//3
 
-    def EnteratLast(self,grid,empty):
-        i=0
-        j=0
-        #empty=self.FindAllEmptyspace(grid)
-        for emp in empty:
-            for value in range(1,10):
-                i=emp[0]
-                j=emp[1]
-                grid[i][j]=value
-                if(self.isValid(grid) and self.validBlock(grid)):
-                    break
+        for i in range(box_y*3,box_y*3+3):
+            for j in range(box_x*3,box_x*3+3):
+                if(self.grid[i][j] == val and (i,j)!=pos):
+                    return False
+        return True
+
+
+
+    def EnteratLast(self,grid):
+        row=0
+        col=0
+        self.grid=grid
+        empty=self.Findempty(self.grid)
+        if not empty:
+            return True
+        else:
+            row,col=empty
+        
+        for i in range(1,10):
+            if(self.valid(self.grid, i, (row,col))):
+                self.grid[row][col] = i
+
+                if(self.EnteratLast(self.grid)):
+                    return True
+                
+                self.grid[row][col]=0
+
+        return False
+
+    def print_grid(self,grid):
+
+        for i in range(len(grid)):
+            if(i%3==0 and i!=0):
+                print("- - - - - - - - - - - - - - -")
+            for j in range(len(grid[0])):
+                if(j%3==0 and j!=0):
+                    print(" | ",end="")
+                if(j == 8):
+                    print(grid[i][j])
                 else:
-                    grid[i][j]=0
-        return grid
+                    print(str(grid[i][j]) + " ",end="")
+
+
 
     def SudokuSolve(self,grid):
         emptyspace=list()
@@ -121,13 +160,13 @@ class Sudoku:
                 emptyspace=self.findEmptyspaces(grid,block)
                 grid=self.InsertInemptySpace(grid,emptyspace)
             n=n+1
-        emptyspace=self.FindAllEmptyspace(grid)
-        grid=self.EnteratLast(grid,emptyspace)
+        grid=self.EnteratLast(grid)
         
         return grid
 
 
 if __name__ == "__main__":
+
     grid=[[0 for x in range(9)]for y in range(9)]
     grid=    [[5,3,0,0,7,0,0,0,0],
               [6,0,0,1,9,5,0,0,0],
@@ -151,10 +190,11 @@ if __name__ == "__main__":
 
     sudoku=Sudoku()
     
-    print(grid)
+    sudoku.print_grid(grid)
 
-    grid=sudoku.SudokuSolve(grid)
-
+    #grid=sudoku.SudokuSolve(grid)
+    sudoku.EnteratLast(grid)
     print("Solution")
-    print(grid)
+    print("    ")
+    sudoku.print_grid(grid)
 
