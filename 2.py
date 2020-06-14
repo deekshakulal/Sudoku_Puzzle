@@ -29,19 +29,6 @@ class SudokuGenerator:
 		for row in self.grid:
 			print(row)
 		return
-	def test_sudoku(self,grid):
-		"""tests each square to make sure it is a valid puzzle"""
-		for row in range(9):
-			for col in range(9):
-				num = grid[row][col]
-				#remove number from grid to test if it's valid
-				grid[row][col] = 0
-				if not self.valid_location(grid,row,col,num):
-					return False
-				else:
-					#put number back in grid
-					grid[row][col] = num
-		return True
 
 	def num_used_in_row(self,grid,row,number):
 		"""returns True if the number has been used in that row"""
