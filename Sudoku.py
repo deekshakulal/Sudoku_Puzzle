@@ -1,4 +1,4 @@
-#import pygame
+import pygame
 from random import shuffle
 import time
 import copy
@@ -16,31 +16,50 @@ class Sudoku:
     
 	def generate_puzzle(self):
 		"""generates a new puzzle and solves it"""
+	
 		self.generate_solution(self.grid)
 		self.remove_numbers_from_grid()
 		self.print_grid(self.grid)
-		return
+	
+		return self.grid
 
 	def solve_puzzle(self, grid):
 		"""solve the sudoku puzzle with backtracking"""
 		for i in range(0,81):
-			row=i//9
-			col=i%9
+			row = i//9
+			col = i%9
 			#find next empty cell
-			if grid[row][col]==0:
+			if grid[row][col] == 0:
 				for number in range(1,10):
 					#check that the number hasn't been used in the row/col/subgrid
 					if self.valid(grid,number,(row,col)):
-						grid[row][col]=number
+						grid[row][col] = number
 						if not self.find_empty_square(grid):
-							self.counter+=1
+							self.counter += 1
 							break
 						else:
 							if self.solve_puzzle(grid):
 								return True
 				break
-		grid[row][col]=0  
+		grid[row][col] = 0  
 		return False
+
+	
+
+	def test_sudoku(self,grid):
+		"""tests each square to make sure it is a valid puzzle"""
+		for row in range(9):
+			for col in range(9):
+				num = grid[row][col]
+				#remove number from grid to test if it's valid
+				grid[row][col] = 0
+				if not self.valid(grid,num,(row,col)):
+					return False
+				else:
+					#put number back in grid
+					grid[row][col] = num
+		return True
+
 
 	def find_empty_square(self,grid):
 		"""return the next empty square coordinates in the grid"""
@@ -56,15 +75,15 @@ class Sudoku:
         
 		number_list = [1,2,3,4,5,6,7,8,9]
 		for i in range(0,81):
-			row=i//9
-			col=i%9
+			row = i//9
+			col = i%9
 			#find next empty cell
-			if grid[row][col]==0:
+			if grid[row][col] == 0:
 				shuffle(number_list)      
 				for number in number_list:
 					if self.valid(grid,number,(row,col)):
 						self.path.append((number,row,col))
-						grid[row][col]=number
+						grid[row][col] = number
 						if not self.find_empty_square(grid):
 							return True
 						else:
@@ -72,7 +91,7 @@ class Sudoku:
 								#if the grid is full
 								return True
 				break
-		grid[row][col]=0  
+		grid[row][col] = 0  
 		return False
 
 	def get_non_empty_squares(self,grid):
@@ -284,13 +303,15 @@ class Sudoku:
 if __name__ == "__main__":
 
 	grid = [[0 for x in range(9)] for y in range(9)]
+	
 	print("Solve this")
-	sudoku = Sudoku(grid)
 	start = time.time()
+	sudoku = Sudoku(grid)	
 
 	sudoku.SudokuSolve(grid)
 
 	end = time.time()
+
 	print("Solution")
 	print("    ")
 	sudoku.print_grid(grid)
